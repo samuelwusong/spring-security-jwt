@@ -13,5 +13,17 @@ public class HelloWorldController {
 	public String hello() {
 		return "Hello World";
 	}
+	
+	@RequestMapping(value = "/hellouser", method = RequestMethod.GET)
+	public String getUser()
+	{
+		return "Hello User";
+	}
+	
+	@RequestMapping(value = "/helloadmin", method = RequestMethod.GET)
+	public String getAdmin()
+	{
+		return "Hello Admin";
+	}
 
 }

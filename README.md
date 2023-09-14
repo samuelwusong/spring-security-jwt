@@ -26,6 +26,12 @@ Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqYXZhaW51c2UiLCJleHAiOjE2OTQ0OTg1NzEsImlh
 * Expand `Hello World Controller` and `/hello` endpoint
 * Put the JWT in the `Authorization` field and change `Response Content Type` to `text/plain`
 * `Hello World` will be returned when the request is run
+* Use the same JWT to access endpoint `/hellouser` and `/helloadmin`
+* `406` (Not Acceptable) will be returned since this user doesn't have the role associated with the endpoint
+* Generate a JWT with the credential `user/user`
+* `Hello World` will be returned from `/hello` endpoint and `Hello User` from `/hellouser`.  `406` (Not Acceptable) will be returned for `/helloadmin`.
+*  Generate a JWT with the credential `admin/admin`
+* `Hello World` will be returned from `/hello` endpoint, `Hello User` from `/hellouser` and `Hello Admin` from `/helloadmin`.
 
 NOTE: The username and password are hardcoded in the example and the JWT will not be generated if changed
 
@@ -44,15 +50,17 @@ This is output of authentication endpoint. It contains the JWT for the valid use
 It exposes a **POST** API `/authenticate`, which takes a `JwtRequest` and returns a `JwtResponse` for the valid user. It calls `AuthenticationManager` to authenticate the user. If the credentials are valid, a JWT token is created using the `JWTTokenUtil`.
 
 ### JWTUserDetailsService
-`JWTUserDetailsService` implements the Spring Security `UserDetailsService` interface and is the key module to authenticate the user. 
+`JWTUserDetailsService` implements the Spring Security `UserDetailsService` interface and is the key module to authenticate/authorize the user. 
 
 `AuthenticationManager` uses it to authenticate the user and `JwtTokenUtil` uses it to generate the JWT. 
 The original `loadUserByUsername` fetches user details from the database using the username. It's overridden to getg the user details from a hardcoded user list. The password for a user is stored in encrypted format using BCrypt which is available at [Online Bcrypt Generator](https://www.javainuse.com/onlineBcrypt).
 
+It also assigns `ADMIN` role to user `admin` and role `USER` to `user`.
+
 ### WebSecurityConfig
 It extends `WebSecurityConfigurerAdapter` and provides the configuration of the web security. It is a convenience class that allows customization to both WebSecurity and HttpSecurity.
 
-It attaches the `UserDetailsService` to `AuthenticationManager` for user authentication and enable/disable the security check for the endpoints. It also adds `JwtRequestFilter` to enable the JWT verification. `JwtAuthenticationEntryPoint` is configured to handle the user authentication failure as well.
+It attaches the `UserDetailsService` to `AuthenticationManager` for user authentication and enable/disable the security check for the endpoints. The role of the user will be checked before the access is given to the endpoint `/hellouser` and `/helloadmin`. It also adds `JwtRequestFilter` to enable the JWT verification. `JwtAuthenticationEntryPoint` is configured to handle the user authentication failure as well.
 
 ### JwtTokenUtil
 `JwtTokenUtil` is a utility class for generating and verifying JWT. It also collects the claims in JWT. 
