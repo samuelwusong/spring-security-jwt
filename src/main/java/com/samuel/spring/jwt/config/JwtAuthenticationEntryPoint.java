@@ -1,4 +1,4 @@
-package com.javainuse.config;
+package com.samuel.spring.jwt.config;
 
 import java.io.IOException;
 import java.io.Serializable;

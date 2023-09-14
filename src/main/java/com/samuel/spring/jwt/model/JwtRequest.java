@@ -1,4 +1,4 @@
-package com.javainuse.model;
+package com.samuel.spring.jwt.model;
 
 import java.io.Serializable;
 
